@@ -1,0 +1,91 @@
+#soundspotter~ external
+# Makefile for PureData (PD) on Mingw / Cygwin -mno-cygwin
+# usage: make -f Makefile.PD.Win
+# outputs soundspotter~.dll
+#
+# Copyright (C) Michael Casey 2009, All Rights Reserved
+
+PDDIR=$(HOME)/src/pd
+LIBFFTW3DIR=$(HOME)/src/fftw-3.1.2-dll
+
+CC=gcc -mno-cygwin
+CXX=g++ -mno-cygwin
+
+INCDIR=-I/usr/local/include/ -I$(PDDIR)/src 
+LIBDIR=-L/usr/local/lib -L/usr/lib
+CFLAGS=-O3 "-D__int64=long long"
+
+# Set one of these to true
+FFMPEG=false
+SNDFILE=true
+
+# Conditional soundfile library
+# default library is libsndfile
+ifeq ($(FFMPEG),true)
+     FFMPEGDIR=$(HOME)/src/ffmpeg
+     SNDFILELIB=$(FFMPEGDIR)/libavformat/libavformat.dll.a $(FFMPEGDIR)/libavcodec/libavcodec.dll.a $(FFMPEGDIR)/libavutil/libavutil.dll.a -lm -lbz2 -lz
+     SNDFILEOBJS=ffmpeginterface.o
+     INCDIR+=
+     LIBDIR=-L.
+     SNDFILEFLAGS=-DFFMPEG
+else 
+     LIBSNDFILEDIR=$(HOME)/src/libsndfile-1_0_17
+     SNDFILELIB=-lsndfile-1
+     SNDFILEOBJS=
+     INCDIR+=-I$(LIBSNDFILEDIR)
+     LIBDIR+=-L$(LIBSNDFILEDIR)
+     SNDFILEFLAGS=-DLIBSNDFILE
+endif
+
+INCDIR+=-I$(LIBFFTW3DIR)
+LIBDIR+=-L$(LIBFFTW3DIR)
+
+LIBS=-lfftw3-3 $(SNDFILELIB) $(PDDIR)/bin/pd.dll
+
+DRIVER=DriverPD
+EXECUTABLE=soundspotter
+EXTERNALLIBRARY=$(EXECUTABLE)~.dll
+STATICLIBRARY=lib$(EXECUTABLE).a
+
+SSOBJS=CircularMatrix.o MatchedFilter.o Matcher.o SoundFile.o SoundSpotter.o FeatureExtractor.o DriverCommon.o $(SNDFILEOBJS)
+LIBOBJS=$(DRIVER).o 
+
+TESTOBJS=CircularMatrix.o MatchedFilter.o Matcher.o SoundFile.o SoundSpotter.o FeatureExtractor.o 
+
+CFLAGS+=$(SNDFILEFLAGS) -DWIN_VERSION -DWIN_EXT_VERSION 
+SHARED_LIB_FLAGS=-shared -export-dynamic -Wl
+LDFLAGS+=
+
+TEST=test
+
+.PHONY: all clean
+
+all: $(EXECUTABLE) $(TEST)
+
+$(EXECUTABLE): $(EXTERNALLIBRARY) $(STATICLIBRARY)
+
+$(SSOBJS): %.o: %.cpp *.h
+	$(CXX) -c $(CFLAGS) $(INCDIR) -Wall $<
+
+$(LIBOBJS): %.o: %.cpp *.h
+	$(CXX) -c $(CFLAGS) $(INCDIR) -Wall $<
+
+testspotter.o: %.o: %.cpp *.h
+	$(CXX) -c $(CFLAGS) $(INCDIR) -Wall $<
+
+$(EXTERNALLIBRARY): $(LIBOBJS) $(SSOBJS)
+	$(CXX) -v --target=i386-mingw32 $(LDFLAGS) $(SHARED_LIB_FLAGS) -o $(EXTERNALLIBRARY) $(CFLAGS) $(DRIVER).def $^ $(LIBDIR) $(LIBS) 
+
+$(STATICLIBRARY): $(SSOBJS)
+	ar rcs $(STATICLIBRARY) $^ 
+
+
+test: $(TESTOBJS) testspotter.o
+	$(CXX) $(CFLAGS) -o testspotter testspotter.o -L. $(STATICLIBRARY) $(LIBDIR) $(LIBS) 
+
+clean:
+	-rm $(LIBOBJS)
+	-rm $(SSOBJS)
+	-rm $(STATICLIBRARY)
+	-rm $(EXTERNALLIBRARY)
+	-rm testspotter.o

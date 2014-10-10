@@ -1,0 +1,75 @@
+#Makefile for soundspotter~ external using the Max5.x API 
+# Author: Michael Casey
+#
+#NOTE:
+# This outputs a soundspotter~ binary which must be wrapped in a soundspotter~.mxo directory
+# This directory must have the same structure as other .mxo directories, including the Info.plist
+# file
+#
+
+HOME=/Users/Casey
+MAXMSPSDK=$(HOME)/src/MaxSDK-5.0.6
+LIBFFTW3DIR=/usr/local/lib
+LIBFFTW3INCDIR=/usr/local/include
+
+INCDIR=-I$(MAXMSPSDK)/c74support/msp-includes -I$(MAXMSPSDK)/c74support/max-includes -L$(LIBFFTW3INCDIR) -I/System/Library/Frameworks/Carbon.framework/Headers -I/Developer/SDKs/MacOSX10.5.sdk/Developer/Headers/FlatCarbon
+
+LIBS=$(LIBFFTW3DIR)/libfftw3.a -lm
+
+FRAMEWORKS=-framework CoreFoundation \
+	-framework CoreServices \
+	-framework MaxAPI \
+	-framework MaxAudioAPI
+
+# Set one of these to true
+FFMPEG=false
+SNDFILE=true
+
+# Conditional soundfile library
+# default library is libsndfile
+ifeq ($(FFMPEG),true)
+     FFMPEGDIR=/usr/local/lib
+     SNDFILELIB=$(FFMPEGDIR)/libavformat.a $(FFMPEGDIR)/libavcodec.a $(FFMPEGDIR)/libavutil.a -lm -lbz2 -lz
+     SNDFILEOBJS=ffmpeginterface.o
+     INCDIR+=
+     LIBDIR+=-L.
+     SNDFILEFLAGS=-DFFMPEG
+else 
+     LIBSNDFILEDIR=$(HOME)/src/libsndfile
+     SNDFILELIB=$(LIBSNDFILEDIR)/src/.libs/libsndfile.a
+     SNDFILEOBJS=
+     INCDIR+=-I$(LIBSNDFILEDIR)/src
+     LIBDIR+=-L$(LIBSNDFILEDIR)/src/.libs
+     SNDFILEFLAGS=-DLIBSNDFILE
+endif
+
+DRIVER=DriverMAX
+EXECUTABLE=soundspotter
+LIBRARY=$(EXECUTABLE)~
+LIBOBJS=$(DRIVER).o DriverCommon.o CircularMatrix.o MatchedFilter.o Matcher.o SoundFile.o SoundSpotter.o FeatureExtractor.o $(SNDFILEOBJS)
+
+CFLAGS=-ggdb -DMAC_VERSION -DMAC_EXT_VERSION -g -Os -pipe -no-cpp-precomp -msse -msse2
+CCFLAGS="-g -Os -pipe"
+LDFLAGS="-bind_at_load"
+LIBS+=$(SNDFILELIB)
+SHARED_LIB_FLAGS=-bundle -read_only_relocs suppress -undefined suppress -flat_namespace
+
+
+.PHONY: all clean test
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(LIBRARY)
+
+$(LIBOBJS): %.o: %.cpp *.h
+	g++ -c $(CFLAGS) $(INCDIR) -Wall $<
+
+%.o: %.cpp *.h
+	g++ -c $(CFLAGS) $(INCDIR) -Wall $(FRAMEWORKS) $<
+
+$(LIBRARY): $(LIBOBJS)
+	g++ $(SHARED_LIB_FLAGS) -o $(LIBRARY) $(CFLAGS) $^ $(FRAMEWORKS) $(LIBDIR) $(LIBS) 
+
+clean:
+	-rm $(LIBOBJS)
+	-rm $(LIBRARY)

@@ -1,0 +1,147 @@
+#N canvas 939 0 494 506 10;
+#X obj 29 87 cnv 15 400 150 empty empty Controls 5 -10 0 14 -233017
+-66577 0;
+#X floatatom 42 110 5 0 0 2 Queue FrameQueuei FrameQueue;
+#X floatatom 124 110 5 0 0 2 Window SequenceHopi SequenceHop;
+#X floatatom 42 164 5 0 0 2 LoBasis LoBasisi LoBasis;
+#X obj 247 104 hsl 150 15 0 4 0 0 M_Distance Distancei Distance -2
+-6 0 10 -262144 -1 -1 0 1;
+#X floatatom 126 165 5 0 0 2 NumBasis NumBasisi NumBasis;
+#X obj 187 21 bng 45 250 50 0 SS_ON empty ON 12 -8 0 14 -258699 -260818
+-33289;
+#X floatatom 245 120 5 0 0 0 - - -;
+#X floatatom 345 207 5 0 0 0 HiSec HiSeci HiK;
+#X floatatom 246 206 5 0 0 0 LoSec - LoK;
+#X obj 248 160 hsl 150 15 0 1 0 0 EnvFollow EnvFollowi EnvFollow -2
+-8 0 10 -262144 -33289 -1 0 1;
+#X floatatom 245 176 5 0 0 0 - - -;
+#X obj 250 20 bng 45 250 50 0 SS_OFF empty OFF 12 -8 0 14 -42246 -241291
+-33289;
+#N canvas 78 95 837 312 4channelSpotter 0;
+#X obj 50 87 multiSpotterInstance;
+#X floatatom 166 103 5 0 0 0 - - -;
+#X floatatom 328 104 5 0 0 0 - - -;
+#X floatatom 489 105 5 0 0 0 - - -;
+#X floatatom 657 106 5 0 0 0 - - -;
+#X obj 375 23 inlet~;
+#X obj 374 169 outlet~;
+#X obj 168 66 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 328 68 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 491 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 655 71 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 212 88 multiSpotterInstance;
+#X obj 374 88 multiSpotterInstance;
+#X obj 541 89 multiSpotterInstance;
+#X connect 0 0 6 0;
+#X connect 0 1 1 0;
+#X connect 5 0 0 0;
+#X connect 5 0 11 0;
+#X connect 5 0 12 0;
+#X connect 5 0 13 0;
+#X connect 7 0 0 1;
+#X connect 8 0 11 1;
+#X connect 9 0 12 1;
+#X connect 10 0 13 1;
+#X connect 11 0 6 0;
+#X connect 11 1 2 0;
+#X connect 12 0 6 0;
+#X connect 12 1 3 0;
+#X connect 13 0 6 0;
+#X connect 13 1 4 0;
+#X restore 67 358 pd 4channelSpotter;
+#N canvas 864 504 215 183 presets 0;
+#X obj 15 15 loadbang;
+#X msg 15 46 \; FrameQueuei 1 \; SequenceHopi 10 \; EnvFollowi 0 \;
+LoBasisi 1 \; NumBasisi 20 \; HiSeci 0 \; pd dsp 1;
+#X connect 0 0 1 0;
+#X restore 358 41 pd presets;
+#N canvas 0 0 474 324 targettrack 0;
+#N canvas 0 0 450 300 (subpatch) 0;
+#X array targettrack 1.15865e+007 float 2;
+#X coords 0 1 1.15865e+007 -1 200 140 1;
+#X restore 187 117 graph;
+#X obj 42 157 soundfiler;
+#X obj 43 65 inlet;
+#X obj 43 87 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 42 112 openpanel;
+#X msg 42 135 read -resize \$1 targettrack;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 4 0 5 0;
+#X connect 5 0 1 0;
+#X restore 36 276 pd targettrack;
+#X obj 34 262 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 274 324 1;
+#X msg 298 324 0 1;
+#X obj 197 366 *~;
+#X floatatom 210 308 5 0 100 0 - - -;
+#X obj 210 324 dbtorms;
+#X obj 197 341 tabplay~ targettrack;
+#X obj 251 307 r SS_ON;
+#X obj 298 307 r SS_OFF;
+#N canvas 92 382 833 308 4channelSpotter 0;
+#X floatatom 166 103 5 0 0 0 - - -;
+#X floatatom 328 104 5 0 0 0 - - -;
+#X floatatom 489 105 5 0 0 0 - - -;
+#X floatatom 657 106 5 0 0 0 - - -;
+#X obj 375 23 inlet~;
+#X obj 374 169 outlet~;
+#X obj 168 66 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 328 68 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 491 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 655 71 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 50 87 multiSpotterInstance;
+#X obj 212 88 multiSpotterInstance;
+#X obj 374 88 multiSpotterInstance;
+#X obj 541 89 multiSpotterInstance;
+#X connect 4 0 10 0;
+#X connect 4 0 11 0;
+#X connect 4 0 12 0;
+#X connect 4 0 13 0;
+#X connect 6 0 10 1;
+#X connect 7 0 11 1;
+#X connect 8 0 12 1;
+#X connect 9 0 13 1;
+#X connect 10 0 5 0;
+#X connect 10 1 0 0;
+#X connect 11 0 5 0;
+#X connect 11 1 1 0;
+#X connect 12 0 5 0;
+#X connect 12 1 2 0;
+#X connect 13 0 5 0;
+#X connect 13 1 3 0;
+#X restore 290 358 pd 4channelSpotter;
+#X obj 189 407 dac~;
+#X obj 171 325 spigot;
+#X obj 170 312 tgl 15 0 empty empty Loop -35 7 0 10 -262144 -1 -1 0
+1;
+#X connect 4 0 7 0;
+#X connect 10 0 11 0;
+#X connect 13 0 26 0;
+#X connect 16 0 15 0;
+#X connect 17 0 22 0;
+#X connect 18 0 22 0;
+#X connect 18 0 28 0;
+#X connect 19 0 26 1;
+#X connect 19 0 26 0;
+#X connect 20 0 21 0;
+#X connect 21 0 19 1;
+#X connect 22 0 13 0;
+#X connect 22 0 19 0;
+#X connect 22 0 25 0;
+#X connect 22 1 27 0;
+#X connect 23 0 17 0;
+#X connect 24 0 18 0;
+#X connect 25 0 26 1;
+#X connect 27 0 22 0;
+#X connect 28 0 27 1;

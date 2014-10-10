@@ -1,0 +1,6 @@
+;DriverPD.def
+
+LIBRARY soundspotter~
+
+EXPORTS
+	main

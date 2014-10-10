@@ -1,0 +1,52 @@
+#soundspotter~ external
+# Makefile for PureData (PD) on Linux
+# usage: make -f Makefile.PD.Linux
+# outputs soundspotter~.pd_linux
+#
+# Copyright (C) Michael Casey 2009, All Rights Reserved
+
+PDDIR=/Users/dpc/Development/pd-0.40-3/
+LIBSNDFILEDIR=/usr/local/lib/
+LIBFFTW3DIR=/usr/local/lib/
+PDPATH=/Users/dpc/Development/pd-0.40-3/
+INCDIR=-I${PDPATH}/src -I/usr/local/include/avformat -I/usr/local/include/avcodec -I/usr/local/include/avutil 
+LIBDIR=-L${PDPATH}/bin
+
+LIBS=/usr/local/lib/libavcodec.a /usr/local/lib/libavformat.a /usr/local/lib/libavutil.a /usr/local/lib/libfftw3.a -lm -lbz2 -lz
+
+DRIVER=DriverPD
+EXECUTABLE=soundspotter~
+LIBRARY=$(EXECUTABLE).pd_darwin
+
+SSOBJS=CircularMatrix.o MatchedFilter.o Matcher.o SoundFile.o SoundSpotter.o FeatureExtractor.o ffmpeginterface.o
+LIBOBJS=$(DRIVER).o DriverCommon.o
+
+CFLAGS=-O3 -DFFMPEG
+SHARED_LIB_FLAGS=-bundle -undefined suppress -flat_namespace -read_only_relocs suppress
+
+TEST=test
+
+.PHONY: all clean test
+
+all: $(EXECUTABLE) $(TEST)
+
+$(EXECUTABLE): $(LIBRARY)
+
+$(SSOBJS): %.o: %.cpp *.h
+	g++ -c $(CFLAGS) $(INCDIR) -Wall $<
+
+$(LIBOBJS): %.o: %.cpp *.h
+	g++ -c $(CFLAGS) $(INCDIR) -Wall $<
+
+$(LIBRARY): $(LIBOBJS) $(SSOBJS)
+	g++ $(SHARED_LIB_FLAGS) -o $(LIBRARY) $(CFLAGS) $^ $(LIBDIR) $(LIBS)  
+
+
+test: $(SSOBJS) testspotter.o
+	g++ $(CFLAGS) -o testspotter $(SSOBJS) testspotter.o $(LIBDIR) $(LIBS)
+
+clean:
+	-rm $(LIBOBJS)
+	-rm $(SSOBJS)
+	-rm $(LIBRARY)
+	-rm testspotter.o

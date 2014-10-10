@@ -1,0 +1,89 @@
+#soundspotter~ external
+# Makefile for Max/MSP on Mingw / Cygwin -mno-cygwin
+# usage: make -f Makefile.Max.Win
+# outputs soundspotter~.mxe
+#
+# Copyright (C) Michael Casey 2009, All Rights Reserved
+
+CC=gcc -mno-cygwin
+CXX=g++ -mno-cygwin
+
+MAXMSPSDK=$(HOME)/"src/maxmspsdk/c74support"
+LIBSNDFILEDIR=$(HOME)/src/libsndfile-1.0.20
+LIBFFTW3DIR=$(HOME)/src/fftw-3.1.2-dll
+
+INCDIR=-I/usr/local/include -I$(MAXMSPSDK)/max-includes -I$(MAXMSPSDK)/msp-includes -I$(LIBSNDFILEDIR) -I$(LIBFFTW3DIR)
+LIBDIR=-L"/cygdrive/c/Program Files/Cycling '74/MaxMSP 4.6/support" -L$(LIBSNDFILEDIR) -L$(LIBFFTW3DIR)
+
+# Set one of these to true
+FFMPEG=true
+SNDFILE=
+
+# Conditional soundfile library
+# default library is libsndfile
+ifeq ($(FFMPEG),true)
+     FFMPEGDIR=$(HOME)/src/ffmpeg
+     SNDFILELIB=$(FFMPEGDIR)/libavformat/libavformat.dll.a $(FFMPEGDIR)/libavcodec/libavcodec.dll.a $(FFMPEGDIR)/libavutil/libavutil.dll.a -lm -lbz2 -lz
+     SNDFILEOBJS=ffmpeginterface.o
+     INCDIR+=
+     LIBDIR+=-L.
+     SNDFILEFLAGS=-DFFMPEG
+else 
+     LIBSNDFILEDIR=$(HOME)/src/libsndfile	
+     SNDFILELIB=-lsndfile
+     SNDFILEOBJS=
+     INCDIR+=-I$(LIBSNDFILEDIR)
+     LIBDIR+=-L$(LIBSNDFILEDIR)
+     SNDFILEFLAGS=-DLIBSNDFILE
+endif
+
+LIBS=$(LIBFFTW3DIR)/libfftw3-3.dll $(SNDFILELIB) -lMaxAPI -lMaxAudio 
+
+DRIVER=DriverMAX
+
+EXECUTABLE=soundspotter
+EXTERNALLIBRARY=$(EXECUTABLE)~.mxe
+STATICLIBRARY=lib$(EXECUTABLE).a
+
+SSOBJS=CircularMatrix.o MatchedFilter.o Matcher.o SoundFile.o SoundSpotter.o FeatureExtractor.o DriverCommon.o $(SNDFILEOBJS)
+LIBOBJS=$(DRIVER).o 
+
+TESTOBJS=CircularMatrix.o MatchedFilter.o Matcher.o SoundFile.o SoundSpotter.o FeatureExtractor.o 
+
+CFLAGS+=$(SNDFILEFLAGS) -DWIN_VERSION -DWIN_EXT_VERSION 
+SHARED_LIB_FLAGS=-shared -export-dynamic -Wl
+LDFLAGS+=
+
+TEST=test
+
+.PHONY: all clean
+
+all: $(EXECUTABLE) $(TEST)
+
+$(EXECUTABLE): $(EXTERNALLIBRARY) $(STATICLIBRARY)
+
+$(SSOBJS): %.o: %.cpp *.h
+	$(CXX) -c $(CFLAGS) $(INCDIR) -Wall $<
+
+$(LIBOBJS): %.o: %.cpp *.h
+	$(CXX) -c $(CFLAGS) $(INCDIR) -Wall $<
+
+testspotter.o: %.o: %.cpp *.h
+	$(CXX) -c $(CFLAGS) $(INCDIR) -Wall $<
+
+$(EXTERNALLIBRARY): $(LIBOBJS) $(SSOBJS)
+	$(CXX) -v --target=i386-mingw32 $(LDFLAGS) $(SHARED_LIB_FLAGS) -o $(EXTERNALLIBRARY) $(CFLAGS) $(DRIVER).def $^ $(LIBDIR) $(LIBS) 
+
+$(STATICLIBRARY): $(SSOBJS)
+	ar rcs $(STATICLIBRARY) $^ 
+
+
+test: $(TESTOBJS) testspotter.o
+	$(CXX) $(CFLAGS) -o testspotter testspotter.o -L. $(STATICLIBRARY) $(LIBDIR) $(LIBS) 
+
+clean:
+	-rm $(LIBOBJS)
+	-rm $(SSOBJS)
+	-rm $(STATICLIBRARY)
+	-rm $(EXTERNALLIBRARY)
+	-rm testspotter.o

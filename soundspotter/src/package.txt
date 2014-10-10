@@ -1,0 +1,40 @@
+#
+# flext - C++ layer for Max/MSP and pd (pure data) externals
+#
+# Copyright (c) 2001-2005 Thomas Grill (gr@grrrr.org)
+# For information on usage and redistribution, and for a DISCLAIMER OF ALL
+# WARRANTIES, see the file, "license.txt," in this distribution.  
+#
+# more information on http://grrrr.org/ext
+# ------------------------------------------------------------------------
+#
+# This file contains information for the building process
+#
+# DO NOT EDIT!!
+#
+# ------------------------------------------------------------------------
+
+NAME=soundspotter~
+
+BUILDCLASS=ext
+BUILDMODE=all
+BUILDTYPE=all
+
+BUILDDIR=build
+
+SRCDIR=soundspotter3
+
+PRECOMPILE=
+
+SRCS=CircularMatrix.cpp SoundFile.cpp DriverFlext.cpp MatchedFilter.cpp Matcher.cpp SoundSpotter.cpp 
+HDRS=
+
+SRCS_SNDOBJ=
+HDRS_SNDOBJ=
+
+SRCS_STK=
+
+HDRS_STK=
+LIBPATH=
+LIBS=-lsndfile -lfftw3
+CFLAGS =-O3

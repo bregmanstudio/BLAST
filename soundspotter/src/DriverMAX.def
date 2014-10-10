@@ -1,0 +1,6 @@
+;DriverMAX.def
+
+LIBRARY soundspotter~
+
+EXPORTS
+	main

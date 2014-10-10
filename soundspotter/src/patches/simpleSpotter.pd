@@ -1,0 +1,69 @@
+#N canvas 427 -8 460 339 10;
+#X obj 29 135 cnv 15 400 150 empty empty Controls 5 -10 0 14 -233017
+-66577 0;
+#X floatatom 42 158 5 0 0 2 Queue FrameQueuei FrameQueue;
+#X floatatom 124 158 5 0 0 2 Window SequenceHopi SequenceHop;
+#X floatatom 42 212 5 0 0 2 LoBasis LoBasisi LoBasis;
+#X obj 247 152 hsl 150 15 0 4 0 0 M_Distance Distancei Distance -2
+-6 0 10 -262144 -1 -1 0 1;
+#X floatatom 126 213 5 0 0 2 NumBasis NumBasisi NumBasis;
+#X obj 30 0 cnv 15 250 75 empty empty Database 5 -10 0 14 -233017 -66577
+0;
+#X obj 307 19 bng 45 250 50 0 SS_ON empty ON 12 -8 0 14 -258699 -260818
+-33289;
+#X floatatom 245 168 5 0 0 0 - - -;
+#X floatatom 345 255 5 0 0 0 HiSec HiSeci HiK;
+#X floatatom 246 254 5 0 0 0 LoSec - LoK;
+#X obj 167 51 bng 15 250 50 0 SS_LOAD empty LOAD 17 7 0 10 -24198 -241291
+-1;
+#X obj 167 23 bng 15 250 50 0 SS_SAVE empty SAVE 17 7 0 10 -260818
+-260818 -1;
+#X obj 248 208 hsl 150 15 0 1 0 0 EnvFollow EnvFollowi EnvFollow -2
+-8 0 10 -262144 -33289 -1 0 1;
+#X floatatom 245 224 5 0 0 0 - - -;
+#X obj 370 18 bng 45 250 50 0 SS_OFF empty OFF 12 -8 0 14 -42246 -241291
+-33289;
+#X obj 45 23 bng 45 250 50 0 EXTRACT empty Extract -10 -8 0 14 -62784
+-241291 -33289;
+#N canvas 64 171 631 329 SoundSpotter 0;
+#X obj 32 127 dac~;
+#X obj 31 38 adc~;
+#X obj 32 59 SOUND_SPOTTER_LIGHT;
+#X text 29 145 AUDIO OUTPUT;
+#X text 29 22 AUDIO INPUT;
+#X obj 379 42 openpanel;
+#X msg 379 68 read -resize \$1 target;
+#X obj 379 92 soundfiler;
+#N canvas 0 0 450 300 tables 0;
+#N canvas 0 0 450 300 (subpatch) 0;
+#X array target 4e+006 float 0;
+#X coords 0 1 4e+006 -1 200 140 1;
+#X restore 96 76 graph;
+#X restore 459 40 pd tables;
+#X obj 379 19 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 229 39 tabplay~ target;
+#X msg 225 19 1;
+#X floatatom 265 72 5 0 120 0 - - -;
+#X obj 265 94 dbtorms;
+#X obj 228 112 *~;
+#X floatatom 109 85 5 0 0 0 - - -;
+#X floatatom 160 86 5 0 0 0 - - -;
+#X msg 260 20 0 1;
+#X connect 1 0 2 0;
+#X connect 2 0 0 0;
+#X connect 2 1 15 0;
+#X connect 2 2 16 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 9 0 5 0;
+#X connect 10 0 2 0;
+#X connect 10 0 14 0;
+#X connect 11 0 10 0;
+#X connect 12 0 13 0;
+#X connect 13 0 14 1;
+#X connect 14 0 0 1;
+#X connect 17 0 10 0;
+#X restore 44 253 pd SoundSpotter;
+#X connect 4 0 8 0;
+#X connect 13 0 14 0;

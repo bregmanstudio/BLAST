@@ -1,0 +1,62 @@
+SoundSpotter
+
+Soundspotter - real-time concatenative audio matching and retrieval
+
+Soundspotter is a library for feature extraction and similarity/dissimilarity-based matching designed
+for real-time use in music performance.
+
+Written by Michael Casey, Dartmouth College, 
+Copyright Michael A. Casey 2001-2009 All Rights Reserved
+
+Repository assistance by David Casal and Davide Morelli
+
+License: Gnu Public License version 2.0 or any later version
+Michael Casey, SOUNDSPOTTER.ORG
+
+See README.txt for compilation and installation instructions
+
+Place patches and soundspotter~ external in SOUNDSPOTTERINSTALLDIR
+Add SOUNDSPOTTERINSTALLDIR to PD or Max/MSP path
+
+Launch: simpleSpotter.pd
+
+EXTRACT a source file. Make sure your computer's mic input is on and turned up.
+
+Press "START" and make sound into mic- the instantaneous output is the best matching window from the source database.
+
+The LIVESPOT mode accumulates what you play as the source database. Matching will be performed against the accumulating buffer.
+
+soundspotter~ is a MSP/PD object that processes an audio stream and
+produces audio output by matching the incoming sample window (a
+concatenation of several audio buffers) to an audio source buffer. The
+best matching part of the source buffer is output by soundspotter~
+for each incoming window. Matching is defined as the Euclidean
+distance between sequences of audio features called "shingles". 
+See:
+
+Casey, M. and Slaney, M. "The Importance of Sequences for Music
+Similarity",IEEE International Conference on Acoustics, Speech and
+Signal Processing, Toulouse, France, April 2006.
+                                                                                                                                                                                                                                                     
+Accepted messages:
+extract "name" - extract MFCC features
+spot - match input segments to database segments
+liveSpot - match using accumulated live samples (input segments to input segments)
+thru - send input samples to output (useful for testing audio)
+stop - halt activity, reset match buffers
+
+Caching:
+save - save extracted features to disk
+soundfile "name" - set the sound source buffer, no extract
+load - set previously saved features (corresponding to soundfile)
+
+Real-time controls:
+
+hopSize - number of frames to wait before matching (0 .. 128)
+frameQueue  - # recently used shingles left out of search (0 .. 9999)
+lowFeature - index of lowest feature to include (0 .. 80)
+numFeatures - # elements in feature vector (1 .. 80)
+distance - the search distance (0=similar ... 1=dissimilar)
+loSec - start point (fractional seconds) of database lookup (0 .. length of file)
+hiSec - end point backwards from end of file (fractional seconds) of database lookup (0 .. length of file)
+envFollow - envelope follower amount, determines relative energy balance of input/output.
