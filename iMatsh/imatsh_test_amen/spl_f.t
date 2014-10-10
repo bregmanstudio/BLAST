@@ -1,0 +1,9 @@
+amen00.power_f
+amen01.power_f
+amen02.power_f
+amen03.power_f
+amen04.power_f
+amen05.power_f
+amen06.power_f
+amen07.power_f
+amen08.power_f

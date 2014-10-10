@@ -1,0 +1,53 @@
+
+fileLen = 4*60; % length of a file in seconds
+sr = 44100;
+ft = 4096;
+fr = sr / 2048;
+signedType = 2;
+floatType = 4;
+doubleType = 8;
+dctN=83;
+maxShingleSize = 128;
+
+% Memory Usage
+xLen = fileLen * sr * signedType;
+featLen = (dctN) * (fileLen * fr)*floatType;
+simMtx = maxShingleSize * (fileLen*fr)*floatType;
+trackUsage = (xLen + featLen + simMtx);
+
+
+% CPU Usage
+shingleSize = 10;
+fps = fr / shingleSize; % Shingle similarity operations per second
+simMtxSize = shingleSize * fileLen * fr; % Correlation matrix size
+simCPU =  fps * (simMtxSize * dctN + simMtxSize); % CorrMtx operations per second
+matchCPU = fps * fileLen*fr;
+ftCPU = fr * ft*log2(ft); % Input Fourier transform operations per second
+pwrCPU = fr * ft;
+nrmCPU = fps * fileLen*fr*shingleSize + fileLen*fr + fr*dctN;
+
+nSplits = [1 2 4 8 12 16];
+nTracks = [1 5 10 20 100];
+
+fprintf('iMash memory usage (GB) tracks\\splits\n');
+fprintf('  \t%02d', nSplits);
+fprintf('\n');
+for k = nTracks
+  fprintf('%02d\t', k);
+  for j = nSplits
+    fprintf('%4.2f\t', (xLen+featLen + j * k * trackUsage) / 1024000000);
+  end
+  fprintf('\n');
+end
+
+fprintf('iMash CPU usage (GHz) tracks\\splits\n');
+fprintf('   \t%02d', nSplits);
+fprintf('\n');
+for k = nTracks
+  fprintf('%02d\t', k);
+  for j = nSplits
+    fprintf('%4.2f\t', (pwrCPU + nrmCPU + ftCPU + simCPU + matchCPU + 10*sr)*k*j / 1000000000);
+  end
+  fprintf('\n');
+end
+

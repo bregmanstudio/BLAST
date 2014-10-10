@@ -1,0 +1,18 @@
+function imatshFix(filename, mediaList)
+%imatshFix(filename, mediaList)
+%
+% Add media files to iMatsh description file
+%
+% Copyright (C) 2010, Michael A. Casey, Dartmouth College
+% All Rights Reserved
+  
+Media = textread(mediaList,"%s"); 
+[d,t,o,n] = textread(filename, "%f %d %d %d");
+n=n+1;
+
+fid = fopen([filename ".fixed"],"wt");
+for k=1:length(d)
+  fprintf(fid,"%f %d %d %s\n", d(k), t(k), o(k), Media{n(k)});
+endfor
+fclose(fid);
+
