@@ -4,10 +4,9 @@
 //
 // Category     : VST 2.x SDK Samples
 // Filename     : soundspotterVST.h
-// Created by   : Steinberg Media Technologies
+// Created by   : Michael A. Casey, Bregman Media Labs
 // Description  : soundspotter plugin (Mono->Stereo)
 //
-// © 2006, Steinberg Media Technologies, All Rights Reserved
 //-------------------------------------------------------------------------------------------------------
 
 #ifndef __soundspotterVST__
