@@ -24,14 +24,11 @@ Audiovisual Data Analysis:
 
       ada - audiovisual database, fast feature data store and lookup [Big Data]
 
-      blindspot - fast modally agnostic feature extractor and matcher [Big Data]
-
-
 eCollage:
 
-      vCollage - video collage synthesis
+      vCollage - video collage analysis/synthesis [video files]
 
-      aCollage - audio collage synthesis
+      aCollage - audio collage analysis/synthesis [analysis is feature agnostic]
 
       soundspotter - real-time matching and collage synthesis
 
