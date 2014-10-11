@@ -1,4 +1,4 @@
-#include "videoMashup.h"
+#include "vCollage.h"
 // Possible titles:
 //
 // Time and Motion Pitcture Study
@@ -229,7 +229,7 @@ void VideoMashup::update(int render_method=0){
   int MatchEventIsGood = processNextEvent(render_method);
   if(!MatchEventIsGood){
     if(!finished())
-      error("Unexpected end of matshup set","videoMashup::processNextEvent()");
+      error("Unexpected end of matshup set","vCollage::processNextEvent()");
   }
   else{
     writeOutputFrames();

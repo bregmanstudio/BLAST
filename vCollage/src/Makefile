@@ -11,13 +11,13 @@ LIBS=-lopencv_calib3d -lopencv_objdetect -lopencv_features2d	\
 -lopencv_core -lopencv_flann -lopencv_contrib
 LIBS+=-lstdc++ -lm
 
-DEPS=videoMashup.h
-OBJ=videoMashup.o
+DEPS=vCollage.h
+OBJ=vCollage.o
 
 %.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-videoMashup: $(OBJ)
+vCollage: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDIR) $(LIBS)
 
 .PHONY: clean
