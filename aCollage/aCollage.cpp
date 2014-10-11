@@ -10,12 +10,12 @@
  *
  */
 
-#include "iMatsh.h"
+#include "aCollage.h"
 #include "Compiler.h"
 
 #define IMATSH_MAIN
 
-void iMatsh::error(const char* format, ... ){
+void aCollage::error(const char* format, ... ){
   char buffer[MAXSTR];
   va_list args;
   va_start (args, format);
@@ -34,7 +34,7 @@ bool operator> (NNresult const &a, NNresult const &b) {
 }
 
 
-iMatsh::iMatsh(const char* targetFile, 
+aCollage::aCollage(const char* targetFile, 
 	       const char* powerFile, 
 	       const char* sourceListFile, 
 	       const char* powerListFile, 
@@ -68,7 +68,7 @@ iMatsh::iMatsh(const char* targetFile,
     hiFeature=featureDim-1;
     fprintf(stderr,"*auto* hiFeature=%d\n", hiFeature);
   }
-  iMatsh::hiFeature = hiFeature;
+  aCollage::hiFeature = hiFeature;
   if(loFeature>hiFeature)
     error("loFeature %d > hiFeature %d", loFeature, hiFeature);
   computeSeriesMeanPowers();
@@ -76,7 +76,7 @@ iMatsh::iMatsh(const char* targetFile,
   matshup_set = new MatshupSet ();
 }
 
-iMatsh::~iMatsh(){
+aCollage::~aCollage(){
   delete media;
   delete targetFeatures;
   delete targetPowers;
@@ -86,7 +86,7 @@ iMatsh::~iMatsh(){
   delete matshup_set;
 }
 
-long iMatsh::loadTarget(const char* targetFile, const char* targetPowerFile){
+long aCollage::loadTarget(const char* targetFile, const char* targetPowerFile){
   long numVectors = countVectors(targetFile);
   if( ! numVectors )
     error("Problem counting target vectors in %s.", targetFile);
@@ -101,7 +101,7 @@ long iMatsh::loadTarget(const char* targetFile, const char* targetPowerFile){
   return numVectors;
 }
 
-long iMatsh::loadSources(const char* fileName, const char* powerName, 
+long aCollage::loadSources(const char* fileName, const char* powerName, 
 			 const char* mediaName, const char* targetName){
   ifstream sourceList (fileName);
   if( ! ( sourceList && sourceList.good() ) )
@@ -171,7 +171,7 @@ long iMatsh::loadSources(const char* fileName, const char* powerName,
   return totalVectors;
 }
 
-long iMatsh::countVectors(const char* fileName){
+long aCollage::countVectors(const char* fileName){
   long begin, end;
   int dim;
   fprintf(stderr,"Counting vectors in %s...\n", fileName);
@@ -194,7 +194,7 @@ long iMatsh::countVectors(const char* fileName){
 }
 
 
-long iMatsh::loadVectors(SeriesOfVectors* s, const char* fileName, idxT dimension, off_t vectorOffset){
+long aCollage::loadVectors(SeriesOfVectors* s, const char* fileName, idxT dimension, off_t vectorOffset){
   ifstream loader(fileName, ifstream::binary);
   if( ! ( loader && loader.good() ) )
     return 0;
@@ -229,7 +229,7 @@ long iMatsh::loadVectors(SeriesOfVectors* s, const char* fileName, idxT dimensio
   return numRead; // number of observations read plus countSoFar
 }
 
-void iMatsh::computeSeriesMeanPowers(){
+void aCollage::computeSeriesMeanPowers(){
   targetPowers->seriesMean(targetPowers->getSeries(), shingleSize, targetPowers->getCols());
   int k, numFiles = track_offsets->size() - 1;     
   for(k = 0; k < numFiles ; k++ )
@@ -250,7 +250,7 @@ inline uint32_t index_to_track_pos(std::vector<off_t>* track_offsets, uint32_t t
   return imatsh_id - trackIndexOffset;
 }
 
-int iMatsh::doMatshup(){
+int aCollage::doMatshup(){
   idxT qpoint, muxi;
   idxT dbSize = sourceFeatures->getCols();
   SeriesOfVectors inShingle(featureDim, shingleSize);
@@ -279,7 +279,7 @@ int iMatsh::doMatshup(){
 }
 
 // record top N matches per query point
-int iMatsh::doMultiMatshup(uint32_t numHits, int randomMatch){
+int aCollage::doMultaCollageup(uint32_t numHits, int randomMatch){
   idxT qpoint, muxi;
   idxT dbSize = sourceFeatures->getCols();
   SeriesOfVectors inShingle(featureDim, shingleSize);
@@ -289,7 +289,7 @@ int iMatsh::doMultiMatshup(uint32_t numHits, int randomMatch){
   ResultQueue *matshupQueue = 0;
   float oneOverMaxInt = 1.0f / MAXRANDINT;
   if(numHits==0)
-    iMatsh::error("numHits==0, in doMultiMatshup(numHits)");
+    aCollage::error("numHits==0, in doMultaCollageup(numHits)");
   for( qpoint = 0 ; qpoint < targetFeatures->getCols() - shingleSize + 1; qpoint+=hopSize ){
     for( muxi = 0 ; muxi < shingleSize ; muxi++ ){
       inShingle.setCol(muxi, targetFeatures->getCol(qpoint+muxi));
@@ -322,7 +322,7 @@ int iMatsh::doMultiMatshup(uint32_t numHits, int randomMatch){
   return EXIT_GOOD;
 }
 
-MatshupSet* iMatsh::getResultSet(){
+MatshupSet* aCollage::getResultSet(){
   return matshup_set;
 }
 
@@ -369,7 +369,7 @@ int processArguments(int argc, const char* argv[],
     _get_arg(argc, argv, &arg, randomMatch, "randomMatch");
   }
   else{
-    fprintf(stderr, "Usage: iMatsh target.features target.powers targetFilename.wav sourceFeatureList.txt sourcePowerList.txt MediaList.txt shingleSize hopSize [queueSize loFeature hiFeature beta numHits frameSizeInSamples frameHopInSamples randomMatch{0,1, <0 matchOnly}]\n");
+    fprintf(stderr, "Usage: aCollage target.features target.powers targetFilename.wav sourceFeatureList.txt sourcePowerList.txt MediaList.txt shingleSize hopSize [queueSize loFeature hiFeature beta numHits frameSizeInSamples frameHopInSamples randomMatch{0,1, <0 matchOnly}]\n");
     return EXIT_BAD;
   }
   // AUTO SET MIX
@@ -409,7 +409,7 @@ int loadMatshupSet(MatshupSet* matshup, const char *matshupFileName, const char*
   vector<string> mediaList;
   string s;
   if(!matshupFile)
-    iMatsh::error("Cannot open iMatsh file %s for reading.", matshupFileName);
+    aCollage::error("Cannot open aCollage file %s for reading.", matshupFileName);
 
 
   ifstream mediaListFile (mediaListName);
@@ -456,13 +456,13 @@ int main(int argc, const char* argv[]){
     exit(EXIT_BAD);
 
   if(argc>9){
-    iMatsh* app = new iMatsh(targetFeatures, targetPowers, sourceFeatureList, sourcePowerList, 
+    aCollage* app = new aCollage(targetFeatures, targetPowers, sourceFeatureList, sourcePowerList, 
 			     mediaList, shingleSize, hopSize, queueSize, loFeature, hiFeature);
     if(randomMatch<0){ // punning the randomMatch field for matchOnly mode
       randomMatch=0;
       matchOnly=true;
     }
-    app->doMultiMatshup(numHits, randomMatch);
+    app->doMultaCollageup(numHits, randomMatch);
     matshup = new MatshupSet(*app->getResultSet());
     delete app;
   }

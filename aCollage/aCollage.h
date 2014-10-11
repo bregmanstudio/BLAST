@@ -32,7 +32,7 @@ typedef std::multiset<NNresult, std::less<NNresult> > MatshupSet;
 typedef MatshupSet::iterator Mit;
 typedef std::pair<Mit, Mit> MitPair;
 
-class iMatsh : public Matcher {
+class aCollage : public Matcher {
  protected:
   SeriesOfVectors* targetFeatures;
   SeriesOfVectors* targetPowers;
@@ -59,12 +59,12 @@ class iMatsh : public Matcher {
   void computeSeriesMeanPowers();
 
  public:
-  iMatsh(const char* targetFile, const char* sourceListFile, int shingleSize, int hopSize, int queueSize);
-  iMatsh(const char* targetFile, const char* powerFile, const char* sourceListFile, const char* powerListFile, 
+  aCollage(const char* targetFile, const char* sourceListFile, int shingleSize, int hopSize, int queueSize);
+  aCollage(const char* targetFile, const char* powerFile, const char* sourceListFile, const char* powerListFile, 
 	 const char* mediaListFile, int shingleSize, int hopSize, int queueSize=0, int loFeature=0, int hiFeature=0);
-  virtual ~iMatsh();
+  virtual ~aCollage();
   int doMatshup();
-  int doMultiMatshup(uint32_t numHits, int randomMatch=0);
+  int doMultaCollageup(uint32_t numHits, int randomMatch=0);
   MatshupSet * getResultSet();
   static void error(const char* format, ... );
 

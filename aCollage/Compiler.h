@@ -1,12 +1,12 @@
 /*
- * Compiler.h - interface to the iMatsh compiler
+ * Compiler.h - interface to the aCollage compiler
  *
  * Author: Michael A. Casey
  * Copyright (C) 2010 Michael Casey, Dartmouth College, All Rights Reserved
  *
  */
 
-#include "iMatsh.h"
+#include "aCollage.h"
 #include "sndfile.h"
 #define _USE_MATH_DEFINES
 

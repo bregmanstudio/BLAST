@@ -45,7 +45,7 @@ Compiler::~Compiler(){
 int Compiler::initialize(const char* targetFileName){  
   std::string str(targetFileName);
   if ( str.find(".") == std::string::npos) 
-    iMatsh::error("Cannot get file extension from targetFileName %s.", targetFileName);  
+    aCollage::error("Cannot get file extension from targetFileName %s.", targetFileName);  
   std::string matshupName(str.substr(0,str.find(".")));
   matshupName.append(".imatsh.wav");
   SF_INFO sfinfo;
@@ -135,13 +135,13 @@ int Compiler::open_audio_file(SNDFILE **snd, const char* fname, int mode, SF_INF
     complete();
     char ebuf[MAXSTR];
     sf_error_str(*snd, ebuf, MAXSTR);
-    iMatsh::error("SoundFile %s failed to open. %s", fname, ebuf);
+    aCollage::error("SoundFile %s failed to open. %s", fname, ebuf);
   }
   if( sfinfo->channels > MAX_CHANNELS ){
     sf_close(*snd);
     *snd=0;
     complete();
-    iMatsh::error("Unsupported channels: %d", sfinfo->channels);
+    aCollage::error("Unsupported channels: %d", sfinfo->channels);
   }
   return sfinfo->channels;
 }
@@ -241,7 +241,7 @@ long Compiler::write_outfile(int last_frame){
      num_written = sf_writef_short(matshupSound, outbuf, samples_per_hop); 
   if(!last_frame && num_written != samples_per_hop){
     complete();
-    iMatsh::error("Short soundfile write in update_outbuf");
+    aCollage::error("Short soundfile write in update_outbuf");
   }
   return num_written;
 }
