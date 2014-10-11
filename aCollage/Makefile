@@ -1,5 +1,5 @@
-# iMatsh
-# Makefile for iMatsh Linux
+# aCollage
+# Makefile for aCollage Linux
 # usage: make
 #
 # Copyright (C) Michael Casey 2010, Dartmouth College, All Rights Reserved
@@ -9,9 +9,9 @@ CFLAGS=-O3
 LIBDIR=
 LIBS=-lsndfile
 
-EXECUTABLE=iMatsh
+EXECUTABLE=aCollage
 
-OBJS=iMatsh.o MatchedFilter.o Matcher.o CircularMatrix.o Compiler.o
+OBJS=aCollage.o MatchedFilter.o Matcher.o CircularMatrix.o Compiler.o
 
 .PHONY: all clean
 
