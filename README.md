@@ -1,7 +1,5 @@
 <h2>BLAST -	Bregman	Labs' Audiovisual Synthesis Tools</h2>
 =================================================
-
-
 Michael A. Casey, Dartmouth College, Hanover, NH
 
 
