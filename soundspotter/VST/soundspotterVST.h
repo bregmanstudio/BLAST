@@ -3,15 +3,15 @@
 // Version 2.4		$Date: 2006/11/13 09:08:27 $
 //
 // Category     : VST 2.x SDK Samples
-// Filename     : jumblatron.h
+// Filename     : soundspotterVST.h
 // Created by   : Steinberg Media Technologies
 // Description  : soundspotter plugin (Mono->Stereo)
 //
 // © 2006, Steinberg Media Technologies, All Rights Reserved
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef __jumblatron__
-#define __jumblatron__
+#ifndef __soundspotterVST__
+#define __soundspotterVST__
 
 #include "public.sdk/source/vst2.x/audioeffectx.h"
 #include "SoundSpotter.h"
@@ -47,15 +47,15 @@ enum
 	kNumParams
 };
 
-class Jumblatron;
+class SoundspotterVST;
 
 //------------------------------------------------------------------------
-class JumblatronProgram
+class SoundspotterVSTProgram
 {
-friend class Jumblatron;
+friend class SoundspotterVST;
 public:
-	JumblatronProgram ();
-	~JumblatronProgram () {}
+	SoundspotterVSTProgram ();
+	~SoundspotterVSTProgram () {}
 
 private:	
 	float fFeedBack;
@@ -73,11 +73,11 @@ private:
 };
 
 //------------------------------------------------------------------------
-class Jumblatron : public AudioEffectX
+class SoundspotterVST : public AudioEffectX
 {
 public:
-	Jumblatron (audioMasterCallback audioMaster);
-	~Jumblatron ();
+	SoundspotterVST (audioMasterCallback audioMaster);
+	~SoundspotterVST ();
 
 	//---from AudioEffect-----------------------
 	virtual void processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames);
@@ -116,7 +116,7 @@ protected:
 	void setMatchRadius (float fmatchradius);
 	void setLoSec(float flosec);
 	void setHiSec(float fhisec);
-	JumblatronProgram* programs;
+	SoundspotterVSTProgram* programs;
 	SoundSpotter* soundSpotter;
 
 	float* bufferIn;
@@ -147,14 +147,14 @@ protected:
 #ifndef __linux
 #include "cfileselector.h"
 
-class JumblatronEditor : public AEffGUIEditor
+class SoundspotterVSTEditor : public AEffGUIEditor
 {
 public:
-	JumblatronEditor (AudioEffect* effect);
-	virtual ~JumblatronEditor ();
+	SoundspotterVSTEditor (AudioEffect* effect);
+	virtual ~SoundspotterVSTEditor ();
 
 protected:
-	Jumblatron* jumblatronEffect;
+	SoundspotterVST* soundspotterVSTEffect;
 	char sourceAudioPath[1024];
 	virtual bool open (void *ptr);
 	virtual void close ();

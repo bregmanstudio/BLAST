@@ -3,7 +3,7 @@
 // Version 2.4		$Date: 2006/11/13 09:08:27 $
 //
 // Category     : VST 2.x SDK Samples
-// Filename     : jumblatron.cpp
+// Filename     : soundspotterVST.cpp
 // Created by   : Steinberg Media Technologies
 // Description  : soundspotter plugin (Mono->Stereo)
 //
@@ -13,12 +13,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifndef __jumblatron__
-#include "jumblatron.h"
+#ifndef __soundspotterVST__
+#include "soundspotterVST.h"
 #endif
 
 //----------------------------------------------------------------------------- 
-JumblatronProgram::JumblatronProgram ()
+SoundspotterVSTProgram::SoundspotterVSTProgram ()
 {
 	// default Program Values
 	fFeedBack = 0.5f;
@@ -37,7 +37,7 @@ JumblatronProgram::JumblatronProgram ()
 
 
 //-----------------------------------------------------------------------------
-Jumblatron::Jumblatron (audioMasterCallback audioMaster)
+SoundspotterVST::SoundspotterVST (audioMasterCallback audioMaster)
 : AudioEffectX (audioMaster, kNumPrograms, kNumParams),
 bufferIn(0),
 bufferOut(0),
@@ -53,7 +53,7 @@ cursor(0)
 {  
 	printf("Soundspotter...");fflush(stdout);
 	initializeSoundSpotter(); // allocate buffers
-	programs = new JumblatronProgram[numPrograms];
+	programs = new SoundspotterVSTProgram[numPrograms];
 	fFeedBack = fOut = 0;
 	if (programs)
 		setProgram (0);
@@ -69,14 +69,14 @@ cursor(0)
 	  }
 	}
 #else
-	editor = new JumblatronEditor (this);
+	editor = new SoundspotterVSTEditor (this);
 	canDo ("offline"); // Enable VST offline process
 #endif
 	resume ();		// flush buffers
 }
 
 //------------------------------------------------------------------------
-Jumblatron::~Jumblatron ()
+SoundspotterVST::~SoundspotterVST ()
 {
 	if (bufferIn)
 		delete[] bufferIn;
@@ -98,7 +98,7 @@ Jumblatron::~Jumblatron ()
 		delete[] programs;
 }
 
-char* Jumblatron::openSourceFile()
+char* SoundspotterVST::openSourceFile()
 {
 	VstFileType aiffType ("AIFF File", "AIFF", "aif", "aiff", "audio/aiff", "audio/x-aiff");
 	VstFileType aifcType ("AIFC File", "AIFC", "aif", "aifc", "audio/x-aifc");
@@ -138,7 +138,7 @@ char* Jumblatron::openSourceFile()
 
 //------------------------------------------------------------------------
 // Probably don't need this, but just in case it's here
-VstInt32 Jumblatron::canDo (char* text)
+VstInt32 SoundspotterVST::canDo (char* text)
 {
 	if (!strcmp (text, "wantsUTF8Paths"))
 		return 1;
@@ -146,7 +146,7 @@ VstInt32 Jumblatron::canDo (char* text)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::initializeSoundSpotter(){
+void SoundspotterVST::initializeSoundSpotter(){
 	soundSpotter = new SoundSpotter(44100, size, SSNUMCHANNELS); //soundFile->getNumChannels()
 	bufferIn = new float[size];  // MONO INPUT
 	bufferOut = new float[size*SSNUMCHANNELS]; //soundFile->getNumChannels()]; // MULTI-CHANNEL OUTPUT
@@ -167,8 +167,8 @@ void Jumblatron::initializeSoundSpotter(){
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::extract(char* fileName){
-	printf("Jumblatron::extract %s,", fileName);fflush(stdout);
+void SoundspotterVST::extract(char* fileName){
+	printf("SoundspotterVST::extract %s,", fileName);fflush(stdout);
 	int retVal = soundFile->sfOpen(fileName);
 	if(retVal){
 		soundSpotter->setAudioDatabaseBuf( soundFile->getSoundBuf(), soundFile->getBufLen(), soundFile->getNumChannels() );
@@ -182,9 +182,9 @@ void Jumblatron::extract(char* fileName){
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setProgram (VstInt32 program)
+void SoundspotterVST::setProgram (VstInt32 program)
 {
-	JumblatronProgram* ap = &programs[program];
+	SoundspotterVSTProgram* ap = &programs[program];
 	curProgram = program;
 	setParameter (kOut, ap->fOut);
 	setParameter (kFeedBack, ap->fFeedBack);
@@ -201,7 +201,7 @@ void Jumblatron::setProgram (VstInt32 program)
 
 
 //------------------------------------------------------------------------
-void Jumblatron::setShingleSize (float fshinglesize)
+void SoundspotterVST::setShingleSize (float fshinglesize)
 {
 	fShingleSize = fshinglesize;
 	programs[curProgram].fShingleSize = fShingleSize;
@@ -209,7 +209,7 @@ void Jumblatron::setShingleSize (float fshinglesize)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setQueueSize (float fqueuesize)
+void SoundspotterVST::setQueueSize (float fqueuesize)
 {
 	fQueueSize = fqueuesize;
 	programs[curProgram].fQueueSize = fQueueSize;
@@ -217,7 +217,7 @@ void Jumblatron::setQueueSize (float fqueuesize)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setLoBasis (float flobasis)
+void SoundspotterVST::setLoBasis (float flobasis)
 {
 	fLoBasis = flobasis;
 	programs[curProgram].fLoBasis = fLoBasis;
@@ -225,7 +225,7 @@ void Jumblatron::setLoBasis (float flobasis)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setNumBasis (float fnumbasis)
+void SoundspotterVST::setNumBasis (float fnumbasis)
 {
 	fNumBasis = fnumbasis;
 	programs[curProgram].fNumBasis = fNumBasis;
@@ -233,7 +233,7 @@ void Jumblatron::setNumBasis (float fnumbasis)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setEnvFollow (float fenvfollow)
+void SoundspotterVST::setEnvFollow (float fenvfollow)
 {
 	fEnvFollow = fenvfollow;
 	programs[curProgram].fEnvFollow = fEnvFollow;
@@ -241,7 +241,7 @@ void Jumblatron::setEnvFollow (float fenvfollow)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setMatchRadius (float fmatchradius)
+void SoundspotterVST::setMatchRadius (float fmatchradius)
 {
 	fMatchRadius = fmatchradius;
 	programs[curProgram].fMatchRadius = fMatchRadius;
@@ -249,14 +249,14 @@ void Jumblatron::setMatchRadius (float fmatchradius)
 }
 
 
-void Jumblatron::setLoSec(float flosec)
+void SoundspotterVST::setLoSec(float flosec)
 {
 	fLoSec = flosec;
 	programs[curProgram].fLoSec = fLoSec;
 	soundSpotter->setLoDataLoc(fLoSec * soundSpotter->getAudioDatabaseFrames()/44100.0f);
 }
 
-void Jumblatron::setHiSec(float fhisec)
+void SoundspotterVST::setHiSec(float fhisec)
 {
 	fHiSec = fhisec;
 	programs[curProgram].fHiSec = fHiSec;
@@ -264,13 +264,13 @@ void Jumblatron::setHiSec(float fhisec)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setProgramName (char *name)
+void SoundspotterVST::setProgramName (char *name)
 {
 	strcpy (programs[curProgram].name, name);
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::getProgramName (char *name)
+void SoundspotterVST::getProgramName (char *name)
 {
 	if (!strcmp (programs[curProgram].name, "Init"))
 		sprintf (name, "%s %d", programs[curProgram].name, curProgram + 1);
@@ -279,7 +279,7 @@ void Jumblatron::getProgramName (char *name)
 }
 
 //-----------------------------------------------------------------------------------------
-bool Jumblatron::getProgramNameIndexed (VstInt32 category, VstInt32 index, char* text)
+bool SoundspotterVST::getProgramNameIndexed (VstInt32 category, VstInt32 index, char* text)
 {
 	if (index < kNumPrograms)
 	{
@@ -290,7 +290,7 @@ bool Jumblatron::getProgramNameIndexed (VstInt32 category, VstInt32 index, char*
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::resume ()
+void SoundspotterVST::resume ()
 {
 	memset (bufferIn, 0, size * sizeof (float));
 	memset (bufferOut, 0, size * sizeof (float) * SSNUMCHANNELS);
@@ -302,9 +302,9 @@ void Jumblatron::resume ()
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::setParameter (VstInt32 index, float value)
+void SoundspotterVST::setParameter (VstInt32 index, float value)
 {
-	JumblatronProgram* ap = &programs[curProgram];
+	SoundspotterVSTProgram* ap = &programs[curProgram];
 	switch (index)
 	{
 		case kOut :      fOut = ap->fOut = value;			break;
@@ -322,7 +322,7 @@ void Jumblatron::setParameter (VstInt32 index, float value)
 }
 
 //------------------------------------------------------------------------
-float Jumblatron::getParameter (VstInt32 index)
+float SoundspotterVST::getParameter (VstInt32 index)
 {
 	float v = 0;
 	switch (index)
@@ -343,7 +343,7 @@ float Jumblatron::getParameter (VstInt32 index)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::getParameterName (VstInt32 index, char *label)
+void SoundspotterVST::getParameterName (VstInt32 index, char *label)
 {
 	switch (index)
 	{
@@ -362,7 +362,7 @@ void Jumblatron::getParameterName (VstInt32 index, char *label)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::getParameterDisplay (VstInt32 index, char *text)
+void SoundspotterVST::getParameterDisplay (VstInt32 index, char *text)
 {
 	switch (index)
 	{
@@ -381,7 +381,7 @@ void Jumblatron::getParameterDisplay (VstInt32 index, char *text)
 }
 
 //------------------------------------------------------------------------
-void Jumblatron::getParameterLabel (VstInt32 index, char *label)
+void SoundspotterVST::getParameterLabel (VstInt32 index, char *label)
 {
 	switch (index)
 	{
@@ -400,27 +400,27 @@ void Jumblatron::getParameterLabel (VstInt32 index, char *label)
 }
 
 //------------------------------------------------------------------------
-bool Jumblatron::getEffectName (char* name)
+bool SoundspotterVST::getEffectName (char* name)
 {
 	strcpy (name, "SoundSpotter");
 	return true;
 }
 
 //------------------------------------------------------------------------
-bool Jumblatron::getProductString (char* text)
+bool SoundspotterVST::getProductString (char* text)
 {
 	strcpy (text, "SoundSpotter");
 	return true;
 }
 
 //------------------------------------------------------------------------
-bool Jumblatron::getVendorString (char* text)
+bool SoundspotterVST::getVendorString (char* text)
 {
 	strcpy (text, "SoundSpotter Media Technologies");
 	return true;
 }
 
-void Jumblatron::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames)
+void SoundspotterVST::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames)
 {
 	float* in = inputs[0];
 	//float* in2 = inputs[1];
@@ -466,17 +466,17 @@ void Jumblatron::processReplacing (float** inputs, float** outputs, VstInt32 sam
 #ifndef __linux
 
 
-JumblatronEditor::JumblatronEditor (AudioEffect* effect)
+SoundspotterVSTEditor::SoundspotterVSTEditor (AudioEffect* effect)
 : AEffGUIEditor (effect)
 {
-	jumblatronEffect = (Jumblatron*)effect;
+	soundspotterVSTEffect = (SoundspotterVST*)effect;
 }
 
-JumblatronEditor::~JumblatronEditor ()
+SoundspotterVSTEditor::~SoundspotterVSTEditor ()
 {
 }
 
-bool JumblatronEditor::open (void *ptr)
+bool SoundspotterVSTEditor::open (void *ptr)
 {
 	AEffGUIEditor::open (ptr);
 
@@ -501,7 +501,7 @@ bool JumblatronEditor::open (void *ptr)
 	CFileSelector selector (NULL);
 	if (selector.run (&vstFileSelect))
 	{
-		jumblatronEffect->extract(vstFileSelect.returnPath);
+		soundspotterVSTEffect->extract(vstFileSelect.returnPath);
 	}
 	else
 	{
@@ -510,12 +510,12 @@ bool JumblatronEditor::open (void *ptr)
 	return true;
 }
 
-void JumblatronEditor::close ()
+void SoundspotterVSTEditor::close ()
 {
 	AEffGUIEditor::close ();
 }
 
-void JumblatronEditor::idle ()
+void SoundspotterVSTEditor::idle ()
 {
 	AEffGUIEditor::idle ();
 }
