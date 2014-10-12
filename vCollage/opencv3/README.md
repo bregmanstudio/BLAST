@@ -2,6 +2,7 @@ vCollage - video feature-driven collage and blend processor
 ===========================================================
 Michael A. Casey - Bregman Media Labs, Dartmouth College
 
+This version requires OpenCV Version 3.0+ library for Poisson blending
 
 Usage: vCollage movieListFile matshupFile [audioFps(46.875000) hopSize(8) motionThresh(20) decimationFactor(4) sizeX(1280) sizeY(720) videoFps(25.000000) display(0) verbosity(2)]
 
