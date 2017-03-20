@@ -13,6 +13,7 @@
 #define IMATSH_DEFAULT_FRAME_SIZE 1024
 #define IMATSH_DEFAULT_FRAME_HOP 1024
 #define MAX_CHANNELS 2
+#define BALANCE_TARGET_SOURCE_AUDIO 0
 
 class Compiler {
 protected:
@@ -41,7 +42,7 @@ protected:
   void up_mix(short* buf, long num_samps, int channels);
   long audio_shingle_to_outbuf(short *buf, float amp, long num_samps, int channel_offset=0, int num_channels=1);
   float sum_exp_distances(MitPair& mp, float beta);
-  float compute_RMS(short* a, long n);
+  float compute_RMS(short* a, long n, int n_channels);
   long write_outfile(int last_frame=0);
   int update_outbuf();
   int init_sfinfo(SF_INFO* sfinfo);
@@ -53,9 +54,9 @@ protected:
 public:  
   Compiler(MatshupSet* const matshup_set, const char* targetFileName, uint32_t shingle_size, uint32_t hop_size,
 	   float beta, float mix, uint32_t frame_size=IMATSH_DEFAULT_FRAME_SIZE, 
-	   uint32_t frame_hop=IMATSH_DEFAULT_FRAME_HOP);
+	   uint32_t frame_hop=IMATSH_DEFAULT_FRAME_HOP, const char* targetFeatureName=0);
   ~Compiler();
-  int initialize(const char* targetFileName);
+  int initialize(const char* targetFileName, const char* targetFeatureName);
   int empty();
   long compile_next();
   int complete();

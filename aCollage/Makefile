@@ -5,7 +5,7 @@
 # Copyright (C) Michael Casey 2010, Dartmouth College, All Rights Reserved
 
 INCDIR=
-CFLAGS=-O3
+CFLAGS=-O3 # -g -ggdb #
 LIBDIR=
 LIBS=-lsndfile
 

@@ -477,7 +477,7 @@ int main(int argc, const char* argv[]){
   fprintf(stderr,"Compiling: targetFeatures=%s, targetFileName=%s, shingleSize=%d, hopSize=%d, beta=%3.2f, mix=%3.2f, frameSizeInSamples=%d, frameHopInSamples=%d\n", 
 	  targetFeatures, targetFileName, shingleSize, hopSize, beta, mix, frameSizeInSamples, frameHopInSamples);  
   Compiler* output = new Compiler(matshup, targetFileName, shingleSize, hopSize, beta, mix, 
-				  frameSizeInSamples, frameHopInSamples);
+				  frameSizeInSamples, frameHopInSamples, targetFeatures); // added targetFeatures mkc 3/20/17
   while ( ! output->empty() )
     output->compile_next();
   output->complete();

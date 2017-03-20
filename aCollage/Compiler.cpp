@@ -18,7 +18,7 @@
  *
  */
 Compiler::Compiler(MatshupSet* const ms, const char* tfn, uint32_t ssz, uint32_t hsz, float beta, float mix, 
-		   uint32_t fsz, uint32_t fhop) :
+		   uint32_t fsz, uint32_t fhop, const char* tfeatn) :
   hop_size(hsz),
   one_hop_in_samples(fhop),
   shingle_size(ssz),
@@ -34,7 +34,7 @@ Compiler::Compiler(MatshupSet* const ms, const char* tfn, uint32_t ssz, uint32_t
   outbuf(0),
   matshup(ms)
 {
-  initialize(tfn);  
+  initialize(tfn, tfeatn);  
 }
   
 Compiler::~Compiler(){
@@ -42,8 +42,8 @@ Compiler::~Compiler(){
   delete[] HammingWindow;
 }
 
-int Compiler::initialize(const char* targetFileName){  
-  std::string str(targetFileName);
+int Compiler::initialize(const char* targetFileName, const char* targetFeatureName){  
+  std::string str(targetFeatureName);
   if ( str.find(".") == std::string::npos) 
     aCollage::error("Cannot get file extension from targetFileName %s.", targetFileName);  
   std::string matshupName(str.substr(0,str.find(".")));
@@ -104,24 +104,32 @@ long Compiler::compile_audio_shingle( MitPair& mp ){
     float eps = std::numeric_limits<float>::epsilon();
     NNresult r = *it;
     nTarget = read_audio_shingle(tbuf, targetSound, r.query_pos*one_hop_in_samples, samples_per_shingle, target_channels, MAX_CHANNELS);
-    window_audio_shingle(tbuf, samples_per_shingle, MAX_CHANNELS);
+    if(shingle_size!=hop_size)
+      window_audio_shingle(tbuf, samples_per_shingle, MAX_CHANNELS);
     //audio_shingle_to_outbuf(tbuf, 0.1*mix,  nTarget, 0, MAX_CHANNELS); // Mix to stereo channels
-    rmsTarget = compute_RMS(tbuf, nTarget);
+    rmsTarget = compute_RMS(tbuf, nTarget, MAX_CHANNELS);
     while( it != mp.second ){
       r = *it++;
       nSource = read_audio_shingle(sbuf, r.media.c_str(), r.track_pos*one_hop_in_samples, samples_per_shingle, MAX_CHANNELS);
-      window_audio_shingle(sbuf, samples_per_shingle, MAX_CHANNELS);
+      if(shingle_size!=hop_size)      
+	window_audio_shingle(sbuf, samples_per_shingle, MAX_CHANNELS);
       nSamples = min( nTarget, nSource );
       if(nSamples){
-	rmsSource = compute_RMS(sbuf, nSamples);
-	if ( rmsTarget > eps && rmsSource > eps){
-	  amp = rmsTarget / rmsSource;
-	}
+	rmsSource = compute_RMS(sbuf, nSamples, MAX_CHANNELS);
+	if (BALANCE_TARGET_SOURCE_AUDIO){
+	  if ( rmsTarget > eps && rmsSource > eps){
+	    amp = 0.9 * rmsTarget / rmsSource;
+	  }
+	  else{
+	    amp = 0.0f;
+	  }
+	} // ELSE DO NOT BALANCE_TARGET_SOURCE_AUDIO
 	else{
-	  amp = 0.0f;
+	  amp = 1.0f;
 	}
 	prob = expf( -beta * r.dist) / expNormDists;
-	//	fprintf(stdout, "%f %f %f %d %d %d\n", fabs(r.dist), prob, amp*prob*smix, r.query_pos, r.track_pos, r.media_idx);
+	fprintf(stdout, "dist: %f prob: %f amp: %f smix: %f\n", fabs(r.dist),  prob, amp, smix);	
+	fprintf(stdout, "audio: %f %f %f %d %d %d\n", fabs(r.dist), prob, amp*prob*smix, r.query_pos, r.track_pos, r.media_idx);
 	audio_shingle_to_outbuf(sbuf, amp*prob*smix,  nSamples, 0, MAX_CHANNELS); // Mix to stereo output
       }
     }
@@ -264,11 +272,12 @@ float Compiler::sum_exp_distances(MitPair& mp, float beta){
   return d;
 }
 
-float Compiler::compute_RMS(short* a, long n){
+float Compiler::compute_RMS(short* a, long n, int n_channels){
   float y = 0.f, x=0.f;
   long nn = n;
   while(nn--){
-    x = (float)*a++;
+    x = (float)*a;
+    a += n_channels;
     y += x*x;
   }
   float rms = sqrtf ( y / n );
